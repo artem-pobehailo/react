@@ -2,6 +2,9 @@ import { useState } from "react";
 
 import "./App.css";
 import Product from "./Product";
+import Mailbox from "./Mailbox";
+import Books from "./Book";
+import Alert from "./Alert";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -31,6 +34,20 @@ function App() {
           price={14.29}
         />
       </div>
+
+      <div>
+        <Mailbox username="fadfgsdgsd" messages="" />
+      </div>
+
+      <div>
+        <Books />
+      </div>
+
+      <>
+        <Alert />
+        <Alert type="error" />
+        <Alert type="success" />
+      </>
     </>
   );
 }
