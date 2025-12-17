@@ -5,6 +5,7 @@ import Product from "./Product";
 import Mailbox from "./Mailbox";
 import Books from "./Book";
 import Alert from "./Alert";
+import Button from "./Button";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -47,6 +48,12 @@ function App() {
         <Alert />
         <Alert type="error" />
         <Alert type="success" />
+      </>
+
+      <>
+        <Button variant="primary" text="Login" />
+        <Button variant="secondary" text="Follow" />
+        <Button text="dddd" />
       </>
     </>
   );
