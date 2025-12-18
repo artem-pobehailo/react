@@ -14,12 +14,18 @@ function App() {
   const imgUrl =
     "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=640";
 
+  const handleClick = () => {
+    alert("click");
+  };
+
+  const handleCount = () => {
+    setCount(count + 1);
+  };
+
   return (
     <>
       {techName}
-      <button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </button>
+      <button onClick={handleCount}>count is {count}</button>
 
       <img src={imgUrl} alt="Man, field and a mountain" width="640" />
       <div>
@@ -51,9 +57,14 @@ function App() {
       </>
 
       <>
-        <Button variant="primary" text="Login" />
+        <Button onClick={handleClick} variant="primary" text="Login" />
         <Button variant="secondary" text="Follow" />
-        <Button text="dddd" />
+        <Button
+          onClick={() => {
+            alert("click");
+          }}
+          text="dddd"
+        />
       </>
     </>
   );
