@@ -6,6 +6,7 @@ import Mailbox from "./Mailbox";
 import Books from "./Book";
 import Alert from "./Alert";
 import Button from "./Button";
+import Forms from "./Form/Form";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -65,8 +66,13 @@ function App() {
           }}
           text="dddd"
         />
+
+
       </>
-    </>
+
+      <Forms />
+      </>
+    
   );
 }
 
