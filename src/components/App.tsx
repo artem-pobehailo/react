@@ -11,6 +11,7 @@ import OrderForm from "./OrderForm/OrderForm";
 import axios from "axios";
 import Swapi from "./Swapi/Swapi";
 import Modal from "./Modal/Modal";
+import LocalStorafe from "./LocalStorage/LocalStorage";
 
 interface Article {
   objectID: string;
@@ -124,6 +125,8 @@ export default function App() {
           </Modal>
         )}
       </div>
+
+      <LocalStorafe />
     </>
   );
 }
