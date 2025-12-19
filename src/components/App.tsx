@@ -7,9 +7,23 @@ import Books from "./Book";
 import Alert from "./Alert";
 import Button from "./Button";
 import Forms from "./Form/Form";
+import OrderForm from "./OrderForm/OrderForm";
+import axios from "axios";
+import Swapi from "./Swapi/Swapi";
 
-function App() {
+interface Article {
+  objectID: string;
+  title: string;
+  url: string;
+}
+interface ArtticleHttpResponse {
+  hits: Article[];
+}
+
+export default function App() {
   const [count, setCount] = useState(0);
+
+  const [articles, setArticles] = useState<Article[]>([]);
 
   const techName = "React";
   const imgUrl =
@@ -21,6 +35,12 @@ function App() {
 
   const handleCount = () => {
     setCount(count + 1);
+  };
+  const handleOrder = async (value: string) => {
+    const res = await axios.get<ArtticleHttpResponse>(
+      `https://hn.algolia.com/api/v1/search?query=${value}`
+    );
+    setArticles(res.data.hits);
   };
 
   return (
@@ -66,14 +86,28 @@ function App() {
           }}
           text="dddd"
         />
-
-
+      </>
+      <>
+        <Forms />
       </>
 
-      <Forms />
+      <>
+        <OrderForm onSubmit={handleOrder} />
+        {articles.length > 0 && (
+          <ul>
+            {articles.map(({ objectID, url, title }) => (
+              <li key={objectID}>
+                <a href={url} target="_blank">
+                  {title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </>
-    
+      <>
+        <Swapi />
+      </>
+    </>
   );
 }
-
-export default App;
