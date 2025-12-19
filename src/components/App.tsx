@@ -10,6 +10,7 @@ import Forms from "./Form/Form";
 import OrderForm from "./OrderForm/OrderForm";
 import axios from "axios";
 import Swapi from "./Swapi/Swapi";
+import Modal from "./Modal/Modal";
 
 interface Article {
   objectID: string;
@@ -42,7 +43,11 @@ export default function App() {
     );
     setArticles(res.data.hits);
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const openModal = () => setIsModalOpen(true);
+
+  const closeModal = () => setIsModalOpen(false);
   return (
     <>
       {techName}
@@ -108,6 +113,17 @@ export default function App() {
       <>
         <Swapi />
       </>
+
+      <div>
+        <h1>Main content of the page</h1>
+        <button onClick={openModal}>Open modal</button>
+        {isModalOpen && (
+          <Modal onClose={closeModal}>
+            <h2>Custom Modal Content</h2>
+            <p>This is a reusable modal with dynamic content.</p>
+          </Modal>
+        )}
+      </div>
     </>
   );
 }
