@@ -12,6 +12,8 @@ import axios from "axios";
 import Swapi from "./Swapi/Swapi";
 import Modal from "./Modal/Modal";
 import LocalStorafe from "./LocalStorage/LocalStorage";
+import fetchPerson, { fetchCharacter } from "../services/service";
+import { useQuery } from "@tanstack/react-query";
 
 interface Article {
   objectID: string;
@@ -23,7 +25,7 @@ interface ArtticleHttpResponse {
 }
 
 export default function App() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
 
   const [articles, setArticles] = useState<Article[]>([]);
 
@@ -49,6 +51,30 @@ export default function App() {
   const openModal = () => setIsModalOpen(true);
 
   const closeModal = () => setIsModalOpen(false);
+
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ["person", count],
+    queryFn: () => fetchPerson(count),
+  });
+
+  const [characterId, setCharacterId] = useState("");
+
+  const {
+    data: characterData,
+    error: characterError,
+    isLoading: isCharacterLoading,
+    isError: isCharacterError,
+  } = useQuery({
+    queryKey: ["character", characterId],
+    queryFn: () => fetchCharacter(characterId),
+    enabled: characterId !== "",
+  });
+
+  const handleSearch = (formData: FormData) => {
+    const id = formData.get("id") as string;
+    setCharacterId(id);
+  };
+
   return (
     <>
       {techName}
@@ -127,6 +153,25 @@ export default function App() {
       </div>
 
       <LocalStorafe />
+
+      <>
+        <button onClick={handleCount}>Get next character</button>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error: {error?.message}</p>}
+        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      </>
+
+      <>
+        <form action={handleSearch}>
+          <input type="text" name="id" placeholder="Enter character ID" />
+          <button type="submit">Search</button>
+        </form>
+        {isCharacterLoading && <p>Loading data, please wait...</p>}
+        {isCharacterError && (
+          <p>Whoops, something went wrong! {characterError?.message}</p>
+        )}
+        {characterData && <pre>{JSON.stringify(characterData, null, 2)}</pre>}
+      </>
     </>
   );
 }
