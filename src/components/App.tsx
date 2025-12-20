@@ -1,3 +1,5 @@
+import css from "./App.module.css";
+
 import { useState } from "react";
 
 import "./App.css";
@@ -12,8 +14,14 @@ import axios from "axios";
 import Swapi from "./Swapi/Swapi";
 import Modal from "./Modal/Modal";
 import LocalStorafe from "./LocalStorage/LocalStorage";
-import fetchPerson, { fetchCharacter } from "../services/service";
-import { useQuery } from "@tanstack/react-query";
+import fetchPerson, {
+  fetchArticles,
+  fetchCharacter,
+} from "../services/service";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import SearchForm from "./SearchForm/SearchForm";
+import ReactPaginate from "react-paginate";
+import ArticleList from "./ArticleList";
 
 interface Article {
   objectID: string;
@@ -75,6 +83,33 @@ export default function App() {
     setCharacterId(id);
   };
 
+  const [topic, setTopic] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  // Щоб між запитами не було "блимань" екрану, додаємо
+  //  властивість placeholderData, яка дозволяє на
+  //  час завантаження нових даних показувати попередні
+  //  або тимчасові дані. Також використовуємо
+  // keepPreviousData (імпорт з React Query)
+  //  для збереження попереднього запиту,
+  // поки не прийдуть нові дані:
+
+  const {
+    data: dataHandleSearchForm,
+    isLoading: isLoadingHandleSearchForm,
+    isError: isErrorHandleSearchForm,
+    isSuccess: isSuccessHandleSearchForm,
+  } = useQuery({
+    queryKey: ["articles", topic, currentPage],
+    queryFn: () => fetchArticles(topic, currentPage),
+    enabled: topic !== "",
+    placeholderData: keepPreviousData,
+  });
+  const totalPages = dataHandleSearchForm?.nbPages ?? 0;
+
+  const handleSearchForm = async (newTopic: string) => {
+    setTopic(newTopic);
+    setCurrentPage(1);
+  };
   return (
     <>
       {techName}
@@ -171,6 +206,30 @@ export default function App() {
           <p>Whoops, something went wrong! {characterError?.message}</p>
         )}
         {characterData && <pre>{JSON.stringify(characterData, null, 2)}</pre>}
+      </>
+
+      <>
+        <SearchForm onSubmit={handleSearchForm} />
+        {isSuccessHandleSearchForm && totalPages > 1 && (
+          <ReactPaginate
+            pageCount={totalPages}
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={2}
+            onPageChange={({ selected }) => setCurrentPage(selected + 1)}
+            forcePage={currentPage - 1}
+            containerClassName={css.pagination}
+            activeClassName={css.active}
+            nextLabel="→"
+            previousLabel="←"
+          />
+        )}
+        {isLoadingHandleSearchForm && <p>Loading data, please wait...</p>}
+        {isErrorHandleSearchForm && (
+          <p>Whoops, something went wrong! Please try again!</p>
+        )}
+        {dataHandleSearchForm && dataHandleSearchForm.hits.length > 0 && (
+          <ArticleList items={dataHandleSearchForm.hits} />
+        )}
       </>
     </>
   );
